@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dialog_recorder_title"
+        android:textColor="#1976D2"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvKayitDurumu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/status_no_recording"
+        android:textSize="14sp"
+        android:textColor="#616161"
+        android:gravity="center"
+        android:layout_marginBottom="20dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnKaydiBaslat"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:text="@string/btn_start_recording" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnKaydiDurdur"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:enabled="false"
+        android:text="@string/btn_stop_recording" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSesiDinle"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:enabled="false"
+        android:text="@string/btn_listen_recording"
+        android:textColor="#2E7D32"
+        app:strokeColor="#2E7D32" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switchOzelSesKullan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/switch_use_custom_sound"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnIptal"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_cancel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnKaydet"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/btn_save_medicine" />
+    </LinearLayout>
+
+</LinearLayout>

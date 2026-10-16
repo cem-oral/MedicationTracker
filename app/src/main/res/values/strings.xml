@@ -95,4 +95,18 @@
     <string name="toast_skip_success">❌ %s atlandı.</string>
     <string name="toast_ocr_success">İlaç kutusu başarıyla tarandı!</string>
     <string name="toast_ocr_fail">Fotoğrafta net metin okunamadı. Lütfen elle girin.</string>
+
+    <string name="menu_alarm_sound">🎙️ Alarm Sesi</string>
+    <string name="dialog_recorder_title">🎙️ Özel Alarm Sesi Kaydet</string>
+    <string name="status_no_recording">Kayıt durumu: Henüz kayıt yok</string>
+    <string name="status_recording">🔴 Kayıt yapılıyor...</string>
+    <string name="status_recorded">✅ Kayıt mevcut / hazır</string>
+    <string name="btn_start_recording">🔴 Kayda Başla</string>
+    <string name="btn_stop_recording">⏹️ Kaydı Durdur</string>
+    <string name="btn_listen_recording">▶️ Kaydı Dinle</string>
+    <string name="switch_use_custom_sound">Alarmda Bu Özel Sesi Kullan</string>
+    <string name="toast_audio_saved">✅ Özel alarm sesi kaydedildi ve aktifleşti.</string>
+    <string name="toast_permission_required">Mikrofon izni gereklidir!</string>
+    <string name="toast_recording_started">Kayıt başlatıldı...</string>
+    <string name="toast_recording_stopped">Kayıt durduruldu.</string>
 </resources>

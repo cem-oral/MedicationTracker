@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_record_sound"
+        android:title="🎙️ Alarm Sesi"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_toggle_lang"
         android:title="🇹🇷 TR / 🇬🇧 EN"
         app:showAsAction="always" />

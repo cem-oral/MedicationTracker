@@ -95,4 +95,18 @@
     <string name="toast_skip_success">❌ %s marked as skipped.</string>
     <string name="toast_ocr_success">Medicine box scanned successfully!</string>
     <string name="toast_ocr_fail">Could not read clear text from photo. Please enter manually.</string>
+
+    <string name="menu_alarm_sound">🎙️ Alarm Sound</string>
+    <string name="dialog_recorder_title">🎙️ Record Custom Alarm Sound</string>
+    <string name="status_no_recording">Recording status: No recording yet</string>
+    <string name="status_recording">🔴 Recording in progress…</string>
+    <string name="status_recorded">✅ Recording available / ready</string>
+    <string name="btn_start_recording">🔴 Start Recording</string>
+    <string name="btn_stop_recording">⏹️ Stop Recording</string>
+    <string name="btn_listen_recording">▶️ Listen Recording</string>
+    <string name="switch_use_custom_sound">Use This Custom Sound for Alarms</string>
+    <string name="toast_audio_saved">✅ Custom alarm sound saved and activated.</string>
+    <string name="toast_permission_required">Microphone permission is required!</string>
+    <string name="toast_recording_started">Recording started...</string>
+    <string name="toast_recording_stopped">Recording stopped.</string>
 </resources>

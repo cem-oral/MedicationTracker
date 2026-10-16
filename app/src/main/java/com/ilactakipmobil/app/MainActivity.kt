@@ -8,6 +8,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -36,6 +38,7 @@ import com.ilactakipmobil.app.alarm.AlarmSoundManager
 import com.ilactakipmobil.app.data.IlacRepository
 import com.ilactakipmobil.app.databinding.ActivityMainBinding
 import com.ilactakipmobil.app.databinding.DialogAddIlacBinding
+import com.ilactakipmobil.app.databinding.DialogAudioRecorderBinding
 import com.ilactakipmobil.app.db.DozKaydiEntity
 import com.ilactakipmobil.app.model.Ilac
 import com.ilactakipmobil.app.model.TakvimGunModel
@@ -102,6 +105,16 @@ class MainActivity : AppCompatActivity() {
         } else {
             Toast.makeText(this, "Kamera izni reddedildi. Galeriden fotoğraf seçebilirsiniz.", Toast.LENGTH_LONG).show()
             pickGalleryLauncher.launch("image/*")
+        }
+    }
+
+    private val requestRecordAudioPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            gosterSesKayitDialogu()
+        } else {
+            Toast.makeText(this, getString(R.string.toast_permission_required), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -224,7 +237,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        setupToolbarLanguageMenu()
+        setupToolbarMenu()
         izinleriKontrolEt()
         setupRecyclerViews()
         setupBottomNavigation()
@@ -241,21 +254,151 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.selectedItemId = R.id.navigation_ilaclar
     }
 
-    private fun setupToolbarLanguageMenu() {
+    private fun setupToolbarMenu() {
         binding.toolbar.inflateMenu(R.menu.main_toolbar_menu)
         guncelleToolbarDilMenuMetni()
 
         binding.toolbar.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.action_toggle_lang) {
-                val currentLang = LocaleHelper.getLanguage(this)
-                val newLang = if (currentLang == "tr") "en" else "tr"
-                LocaleHelper.setLanguage(this, newLang)
-                recreate()
-                true
-            } else {
-                false
+            when (item.itemId) {
+                R.id.action_record_sound -> {
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        gosterSesKayitDialogu()
+                    } else {
+                        requestRecordAudioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                    true
+                }
+                R.id.action_toggle_lang -> {
+                    val currentLang = LocaleHelper.getLanguage(this)
+                    val newLang = if (currentLang == "tr") "en" else "tr"
+                    LocaleHelper.setLanguage(this, newLang)
+                    recreate()
+                    true
+                }
+                else -> false
             }
         }
+    }
+
+    private fun gosterSesKayitDialogu() {
+        val dialogBinding = DialogAudioRecorderBinding.inflate(layoutInflater)
+        val dialog = MaterialAlertDialogBuilder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        val customFile = File(filesDir, "custom_alarm_sound.3gp")
+        val prefs = getSharedPreferences("ilac_takip_prefs", Context.MODE_PRIVATE)
+        val useCustom = prefs.getBoolean("key_use_custom_sound", false)
+
+        dialogBinding.switchOzelSesKullan.isChecked = useCustom && customFile.exists()
+
+        if (customFile.exists()) {
+            dialogBinding.tvKayitDurumu.text = getString(R.string.status_recorded)
+            dialogBinding.btnSesiDinle.isEnabled = true
+        } else {
+            dialogBinding.tvKayitDurumu.text = getString(R.string.status_no_recording)
+            dialogBinding.btnSesiDinle.isEnabled = false
+        }
+
+        var mediaRecorder: MediaRecorder? = null
+        var mediaPlayer: MediaPlayer? = null
+
+        dialogBinding.btnKaydiBaslat.setOnClickListener {
+            try {
+                if (customFile.exists()) {
+                    customFile.delete()
+                }
+                mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    MediaRecorder(this)
+                } else {
+                    @Suppress("DEPRECATION")
+                    MediaRecorder()
+                }.apply {
+                    setAudioSource(MediaRecorder.AudioSource.MIC)
+                    setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                    setOutputFile(customFile.absolutePath)
+                    prepare()
+                    start()
+                }
+
+                dialogBinding.tvKayitDurumu.text = getString(R.string.status_recording)
+                dialogBinding.btnKaydiBaslat.isEnabled = false
+                dialogBinding.btnKaydiDurdur.isEnabled = true
+                dialogBinding.btnSesiDinle.isEnabled = false
+                Toast.makeText(this, getString(R.string.toast_recording_started), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Kayıt başlatılamadı: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogBinding.btnKaydiDurdur.setOnClickListener {
+            try {
+                mediaRecorder?.apply {
+                    stop()
+                    release()
+                }
+                mediaRecorder = null
+
+                dialogBinding.tvKayitDurumu.text = getString(R.string.status_recorded)
+                dialogBinding.btnKaydiBaslat.isEnabled = true
+                dialogBinding.btnKaydiDurdur.isEnabled = false
+                dialogBinding.btnSesiDinle.isEnabled = customFile.exists()
+                Toast.makeText(this, getString(R.string.toast_recording_stopped), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        dialogBinding.btnSesiDinle.setOnClickListener {
+            try {
+                mediaPlayer?.release()
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(customFile.absolutePath)
+                    prepare()
+                    start()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Dinleme hatası: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        dialogBinding.btnIptal.setOnClickListener {
+            try {
+                mediaRecorder?.release()
+            } catch (_: Exception) {}
+            try {
+                mediaPlayer?.release()
+            } catch (_: Exception) {}
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnKaydet.setOnClickListener {
+            try {
+                mediaRecorder?.release()
+            } catch (_: Exception) {}
+            try {
+                mediaPlayer?.release()
+            } catch (_: Exception) {}
+
+            val useActive = dialogBinding.switchOzelSesKullan.isChecked
+            prefs.edit().putBoolean("key_use_custom_sound", useActive && customFile.exists()).apply()
+            Toast.makeText(this, getString(R.string.toast_audio_saved), Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+
+        dialog.setOnDismissListener {
+            try {
+                mediaRecorder?.release()
+            } catch (_: Exception) {}
+            try {
+                mediaPlayer?.release()
+            } catch (_: Exception) {}
+        }
+
+        dialog.show()
     }
 
     private fun guncelleToolbarDilMenuMetni() {
